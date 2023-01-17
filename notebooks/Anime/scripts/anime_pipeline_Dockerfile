@@ -1,0 +1,15 @@
+FROM python:3.8
+
+RUN mkdir /tmp/installers
+WORKDIR /tmp/installers
+
+# Copy all the requirements to run current DAG
+COPY ./anime_pipeline_requirements.txt ./
+
+# Install required libs
+RUN pip install -r ./anime_pipeline_requirements.txt
+
+WORKDIR /home
+COPY ./anime_pipeline_module.py ./
+
+ENTRYPOINT [ "python", "/home/anime_pipeline_module.py" ]

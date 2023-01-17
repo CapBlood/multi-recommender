@@ -1,0 +1,56 @@
+[tool.kedro]
+package_name = "multirec"
+project_name = "multirec"
+project_version = "0.18.4"
+
+[tool.isort]
+profile = "black"
+
+[tool.pytest.ini_options]
+addopts = """
+--cov-report term-missing \
+--cov src/multirec -ra"""
+
+[tool.coverage.report]
+fail_under = 0
+show_missing = true
+exclude_lines = ["pragma: no cover", "raise NotImplementedError"]
+
+[project]
+name = "multirec"
+authors = [
+  { name="CapBlood" },
+]
+version = "0.1"
+dynamic = ["dependencies"]
+
+[project.urls]
+"Homepage" = "https://github.com/CapBlood/multi-recommender.git"
+
+[project.scripts]
+multirec = "multirec.__main__:main"
+
+[project.optional-dependencies]
+docs = [
+    "docutils<0.18.0",
+    "nbstripout~=0.4",
+    "ipykernel>=5.3, <7.0",
+    "Jinja2<3.1.0",
+    "myst-parser~=0.17.2",
+]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]  # list of folders that contain the packages (["."] by default)
+include = ["multirec*"]  # package names should match these glob patterns (["*"] by default)
+exclude = ["multirec.tests*"]  # exclude packages matching these glob patterns (empty by default)
+namespaces = false  # to disable scanning PEP 420 namespaces (true by default)
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["src/requirements.txt"]}

@@ -1,0 +1,2 @@
+recursive-include src/multirec *.yml .gitkeep *.toml
+prune __pycache__
