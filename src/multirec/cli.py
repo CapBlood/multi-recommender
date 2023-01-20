@@ -31,6 +31,8 @@ from kedro.framework.cli.utils import (
 from kedro.framework.session import KedroSession
 from kedro.utils import load_obj
 
+from multirec.cli_context import CliSession
+
 
 @click.group(context_settings=CONTEXT_SETTINGS, name=__file__)
 def cli():
@@ -129,7 +131,7 @@ def pipeline(
     tag = _get_values_as_tuple(tag) if tag else tag
     node_names = _get_values_as_tuple(node_names) if node_names else node_names
 
-    with KedroSession.create(env=env, extra_params=params) as session:
+    with CliSession.create(env=env, extra_params=params) as session:
         session.run(
             tags=tag,
             runner=runner(is_async=is_async),
