@@ -13,6 +13,7 @@
   - [Доступные пайплайны](#доступные-пайплайны)
   - [Сборка пакета](#сборка-пакета)
   - [Тестирование](#тестирование)
+  - [Микроупаковка](#микроупаковка)
 
 
 ## Описание
@@ -81,3 +82,15 @@ kedro manage pipeline --params dataframe:path/to/in.csv,dataframe_with_recs:path
 ```bash
 tox
 ``` 
+
+## Микроупаковка
+
+Для микроупаковки пайплайна Kedro необходимо ввести следующую команду:
+```bash
+kedro micropkg package pipelines.<pipeline_name>
+```
+
+Для вставки микропакета пайплайна в другой проект Kedro:
+```bash
+kedro micropkg pull -d pipelines /path/to/tag.gz
+```
