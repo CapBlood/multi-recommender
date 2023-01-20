@@ -27,7 +27,7 @@ def _find_run_command(package_name):
     # fail badly if cli.py exists, but has no `cli` in it
     if not hasattr(project_cli, "cli"):
         raise KedroCliError(f"Cannot load commands from {package_name}.cli")
-    return project_cli.run
+    return project_cli.manage
 
 
 def _find_run_command_in_plugins(plugins):
@@ -39,8 +39,8 @@ def _find_run_command_in_plugins(plugins):
 def main(*args, **kwargs):
     package_name = Path(__file__).parent.name
     configure_project(package_name)
-    run = _find_run_command(package_name)
-    run(*args, **kwargs)
+    cli = _find_run_command(package_name)
+    cli(*args, **kwargs)
 
 
 if __name__ == "__main__":

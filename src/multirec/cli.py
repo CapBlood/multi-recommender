@@ -38,11 +38,11 @@ def cli():
 
 
 @cli.group()
-def run():
+def manage():
     """Консольная утилита для управления MultiRecommender."""
 
 
-@run.command()
+@manage.command()
 @click.option(
     "--path",
     type=str,
@@ -62,7 +62,7 @@ def deploy(path: str) -> None:
     shutil.copytree(template_path, dst_path, dirs_exist_ok=True)
 
 
-@run.command()
+@manage.command()
 @click.option(
     "--from-inputs", type=str, default="", help=FROM_INPUTS_HELP, callback=split_string
 )
