@@ -23,13 +23,14 @@ class IntCodec(TypeCodec):
         return int(value)
 
 
-class MongoDbDataset(AbstractDataSet[pd.DataFrame, pd.DataFrame]):
-    def __init__(self, filepath: str, database: str, collection: str):
+class MongoDBDataset(AbstractDataSet[pd.DataFrame, pd.DataFrame]):
+    def __init__(self, filepath: str, database: str, collection: str, filter_columns: list = []):
         protocol, path = re.split("://", filepath)
         self._protocol = protocol
         self._dbpath = path
         self._db = database
         self._collection = collection
+        self._filter_columns = filter_columns
 
     def _describe(self) -> Dict[str, Any]:
         return dict(filepath=self._dbpath, protocol=self._protocol)
@@ -50,6 +51,9 @@ class MongoDbDataset(AbstractDataSet[pd.DataFrame, pd.DataFrame]):
             type_registry=TypeRegistry([IntCodec()]))
         collection = db.get_collection(
             self._collection, codec_options=codec_options)
+
+        if self._filter_columns:
+            data = data[self._filter_columns]
 
         data.index = data.index.rename("_id")
         data = data.reset_index()
