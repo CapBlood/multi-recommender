@@ -2,10 +2,30 @@
 #
 # Documentation for this file format can be found in "The Data Catalog"
 # Link: https://kedro.readthedocs.io/en/stable/data/data_catalog.html
+
 dataframe:
   type: pandas.CSVDataSet
   filepath: data/01_raw/anime.csv
 
+
+mongo_dataframe:
+  type: multirec.extras.datasets.mongo_dataset.MongoDBDataset
+  filepath: mongodb://localhost:27017
+  database: test
+  collection: anime
+
+
 dataframe_with_recs:
-  type: pandas.CSVDataSet
-  filepath: data/03_primary/dataframe_with_recs.csv
+  type: multirec.extras.datasets.mongo_dataset.MongoDBDataset
+  filepath: mongodb://localhost:27017
+  database: test
+  collection: anime
+  filter_columns:
+    - Name
+    - Episodes
+    - Studio
+    - Rating
+    - Description
+    - Tags
+    - Related_Mange
+    - recommendations
