@@ -49,6 +49,10 @@ def get_recommendations(
 
         recommendations = recommendations.apply(fix_indices)
         recommendations.index = target_column.index
+        
+        if rec_column_name in rs_df.columns:
+            rs_df = rs_df.drop(columns=[rec_column_name])
+
         final_df = rs_df.join(recommendations)
         return final_df
 
