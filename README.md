@@ -10,7 +10,9 @@
     - [Через PyPI](#через-pypi-1)
     - [Через Kedro](#через-kedro-1)
   - [Развертывание](#развертывание)
-  - [Доступные пайплайны](#доступные-пайплайны)
+  - [Доступные модульные пайплайны](#доступные-модульные-пайплайны)
+  - [Пайплайны для запуска](#пайплайны-для-запуска)
+  - [Кастомные датасеты](#кастомные-датасеты)
   - [Сборка пакета](#сборка-пакета)
   - [Тестирование](#тестирование)
   - [Микроупаковка](#микроупаковка)
@@ -65,12 +67,42 @@ kedro manage pipeline --params dataframe:path/to/in.csv,dataframe_with_recs:path
 
 **Примечание:** развертывание актуально только в случае, если установка производится через PyPI.
 
-## Доступные пайплайны
+## Доступные модульные пайплайны
 
 На данный момент доступны следующие пайплайны:
 - [build_recommendations_based_similar](./src/multirec/pipelines/build_recommendations_based_similar/README.md).
 
 Для более наглядного представления входных данных, параметров и выходных данных (откуда берутся, куда записываются и т.д.) пайплайна рекомендуется использовать команду `kedro viz` для визуализации пайплайнов (данная возможность доступна только при клонировании репозитория). Посмотреть описание пайплайнов также можно в коде - в директории `pipelines`.
+
+## Пайплайны для запуска
+
+- `add_recommendations_to_mongo` (на основе [build_recommendations_based_similar](./src/multirec/pipelines/build_recommendations_based_similar/README.md)) - построение рекомендаций для указанного csv и его [импорт](#кастомные-датасеты) в MongoDB;
+- `update_recommendations_to_mongo` (на основе [build_recommendations_based_similar](./src/multirec/pipelines/build_recommendations_based_similar/README.md)) - [экспорт](#кастомные-датасеты) указанной коллекции в MongoDB в csv и построение для него рекомендаций, затем импорт обратно в MongoDB с перезаписью.
+
+## Кастомные датасеты
+
+В данном проекте используется кастомный датасет `MongoDBDataset`:
+- при загрузке происходит экспорт указанной коллекции в `JSON`, затем его конвертация в `pandas.Dataframe`, который передается далее пайплайну;
+- при сохранении происходит конвертация полученного на вход `pandas.Dataframe` в `JSON` и его вставка с перезаписью в указанную коллекцию `MondoDB`.
+
+Пример конфигурации `MongoDBDataset`:
+```yml
+dataframe_with_recs:
+  type: multirec.extras.datasets.mongo_dataset.MongoDBDataset
+  filepath: mongodb://localhost:27017
+  database: test
+  collection: anime
+  # filter_columns - опционален
+  filter_columns:
+    - Name
+    - Episodes
+    - Studio
+    - Rating
+    - Description
+    - Tags
+    - Related_Mange
+    - recommendations
+```
 
 ## Сборка пакета
 
