@@ -60,8 +60,8 @@ def get_recommendations(
     return final_df
 
 
-build_recommendations_node = node(
-    func=get_recommendations,
-    inputs=["params:target_column", "dataframe"],
-    outputs="dataframe_with_recs",
-)
+# build_recommendations_node = node(
+#     func=get_recommendations,
+#     inputs=["params:target_column", "dataframe"],
+#     outputs="dataframe_with_recs",
+# )
