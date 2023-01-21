@@ -41,6 +41,10 @@ class MongoDBDataset(AbstractDataSet[pd.DataFrame, pd.DataFrame]):
         collection = db[self._collection]
         cursor = collection.find({})
         df = pd.json_normalize(cursor)
+
+        if self._filter_columns:
+            df = df[self._filter_columns]
+
         return df
 
     def _save(self, data: pd.DataFrame) -> None:
