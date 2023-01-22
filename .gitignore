@@ -4,6 +4,7 @@
 # Custom
 *.csv
 .vscode
+wandb
 
 # ignore all local configuration
 conf/local/**
