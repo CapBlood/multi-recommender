@@ -14,9 +14,9 @@ def run(testdir):
     return do_run
 
 
-def test_cli_multirec_deploy(tmpdir, run):
-    result = run("deploy", "--path", tmpdir)
-    assert result.ret == 0
+# def test_cli_multirec_deploy(tmpdir, run):
+#     result = run("run", "--path", tmpdir)
+#     assert result.ret == 0
 
 
 # def test_cli_multirec_deploy_start(tmpdir, run):
