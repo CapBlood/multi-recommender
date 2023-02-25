@@ -1,21 +1,14 @@
 """Command line tools for manipulating a Kedro project.
 Intended to be invoked via `kedro`."""
-import shutil
-import os
-
 import click
 from kedro.framework.cli.utils import (
     CONTEXT_SETTINGS,
 )
-from kedro.framework.session import KedroSession
-from kedro.utils import load_obj
 from kedro.io import DataCatalog, MemoryDataSet
 from kedro.extras.datasets.pandas import CSVDataSet
 
 from kedro.runner import SequentialRunner
 from kedro.framework.project import pipelines
-
-from multirec.cli_context import CliSession
 
 
 @click.group(context_settings=CONTEXT_SETTINGS, name=__file__)
