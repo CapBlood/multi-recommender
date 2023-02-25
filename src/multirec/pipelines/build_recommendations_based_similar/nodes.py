@@ -29,7 +29,7 @@ def get_recommendations(
         Returns:
             pd.Dataframe: Dataframe с сгенерированными рекомендациями в новом столбце.
         """
-        target_column = rs_df.copy()[column].dropna()
+        target_column = rs_df.copy()[column]
         vectorizer = CountVectorizer(token_pattern=r"(?u)(\w[\w ]+)")
         vectors = vectorizer.fit_transform(target_column.tolist())
         nbrs = NearestNeighbors(n_neighbors=top).fit(vectors)
