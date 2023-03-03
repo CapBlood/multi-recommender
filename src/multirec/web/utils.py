@@ -1,4 +1,5 @@
 import os
+from typing import List
 
 import streamlit as st
 import pandas as pd
@@ -8,7 +9,7 @@ from kedro.runner import SequentialRunner
 from kedro.framework.project import pipelines
 from kedro.framework.startup import bootstrap_project
 
-from multirec.web.exceptions import TooMuchResults
+from multirec.web.exceptions import TooMuchResults, ItemNotFound
 
 @st.cache_data
 def get_recs(input_csv, col):
@@ -39,14 +40,14 @@ def get_recs(input_csv, col):
 def get_item_content(
         title: str, title_column_name: str,
         recs_column_name: str, df: pd.DataFrame) -> List[str]:
-    
+
     title = title.lower()
     matches = df[df[title_column_name].str.lower() == title]
     if len(matches) == 0:
         matches = df[df[title_column_name].str.lower().str.contains(title)]
-        if len(matches) == 0:
-            # ...
-            return
+
+    if len(matches) == 0:
+        raise ItemNotFound("'{}' doesn't exist".format(title))
 
     if len(matches) > 1:
         raise TooMuchResults(
@@ -61,7 +62,9 @@ def get_item_content(
     item_series_by_recs = df.loc[recs]
 
     return {
-        'title': item_series['Name'],
+        'title': item_series[title_column_name],
         'desc': item_series['Russian_description'],
-        'recs': item_series_by_recs['Name'].to_list()
+        'shiki_url': item_series['Shikimori_url'],
+        'tags': item_series['Tags'],
+        'recs': item_series_by_recs[title_column_name].to_list()
     }
