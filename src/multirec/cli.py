@@ -6,9 +6,10 @@ from kedro.framework.cli.utils import (
 )
 from kedro.io import DataCatalog, MemoryDataSet
 from kedro.extras.datasets.pandas import CSVDataSet
-
 from kedro.runner import SequentialRunner
 from kedro.framework.project import pipelines
+
+from multirec.web.__main__ import run_web
 
 
 @click.group(context_settings=CONTEXT_SETTINGS, name=__file__)
@@ -47,3 +48,8 @@ def run(path, out, col):
     default_pipeline = pipelines['__default__']
 
     SequentialRunner().run(default_pipeline, catalog=io)
+
+
+@manage.command()
+def web():
+    run_web()
