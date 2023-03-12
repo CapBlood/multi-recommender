@@ -1,50 +1,47 @@
-import os
 from typing import List
 
 import streamlit as st
 import pandas as pd
-from kedro.io import DataCatalog, MemoryDataSet
-from kedro.extras.datasets.pandas import CSVDataSet
-from kedro.runner import SequentialRunner
-from kedro.framework.project import pipelines
-from kedro.framework.startup import bootstrap_project
 
-from multirec.web.exceptions import TooMuchResults, ItemNotFound
+from multirec.web.exceptions import TooMuchResults, ItemNotFound, IncorrectCsvStructure
+from multirec.web.constants import CSV_FIELDS
+
 
 @st.cache_data
-def get_recs(input_csv, col):
-    # Для того, чтобы инициализировать Kedro
-    path = os.path.realpath(
-        os.path.join(os.path.realpath(__file__), 
-        "../../../../")
+def get_recs(input_csv, mapping=None):
+    df = pd.read_csv(
+        input_csv
     )
-    bootstrap_project(path)
 
-    io = DataCatalog(
-            {
-                'dataframe': CSVDataSet(filepath=input_csv),
-                'dataframe_with_recs': MemoryDataSet(),
-                'params:target_column': MemoryDataSet(col)
-            }
-        )
+    if mapping is not None:
+        for map_name in mapping.values():
+            if map_name in df.columns:
+                df = df.drop(columns=[map_name])
 
+        df = df.rename(columns=mapping)
+
+    for csv_field in CSV_FIELDS:
+        if csv_field not in df.columns:
+            raise IncorrectCsvStructure(
+                "Incorrect structure in {}: field {} doesn't exist".format(
+                    input_csv, csv_field)
+            )
         
-    default_pipeline = pipelines['__default__']
+    df['Recommendations'] = df['Recommendations'].apply(
+        lambda x: list(map(int, x.strip("[]").split(", ")))
+    )
 
-    SequentialRunner().run(default_pipeline, catalog=io)
-
-    return io.load('dataframe_with_recs')
+    return df
 
 
 @st.cache_data
 def get_item_content(
-        title: str, title_column_name: str,
-        recs_column_name: str, df: pd.DataFrame) -> List[str]:
+        title: str, df: pd.DataFrame) -> List[str]:
 
     title = title.lower()
-    matches = df[df[title_column_name].str.lower() == title]
+    matches = df[df['Name'].str.lower() == title]
     if len(matches) == 0:
-        matches = df[df[title_column_name].str.lower().str.contains(title)]
+        matches = df[df['Name'].str.lower().str.contains(title)]
 
     if len(matches) == 0:
         raise ItemNotFound("'{}' doesn't exist".format(title))
@@ -52,19 +49,19 @@ def get_item_content(
     if len(matches) > 1:
         raise TooMuchResults(
             "Too much results ({}). You must choose the only one:\n{}".format(
-                len(matches), "\n".join(matches[title_column_name].to_list())
+                len(matches), "\n".join(matches['Name'].to_list())
             )
         )
     
     item_series = matches.iloc[0]
     
-    recs = item_series[recs_column_name]
+    recs = item_series["Recommendations"]
     item_series_by_recs = df.loc[recs]
 
     return {
-        'title': item_series[title_column_name],
-        'desc': item_series['Russian_description'],
-        'shiki_url': item_series['Shikimori_url'],
+        'title': item_series['Name'],
+        'desc': item_series['Description'],
+        'url': item_series['Url'],
         'tags': item_series['Tags'],
-        'recs': item_series_by_recs[title_column_name].to_list()
+        'recs': item_series_by_recs['Name'].to_list()
     }

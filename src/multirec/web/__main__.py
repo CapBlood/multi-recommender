@@ -1,8 +1,10 @@
 import subprocess
 
 
-def run_web():
-    subprocess.run(["streamlit", "run", "src/multirec/web/app.py"])
+def run_web(csv_path, mapping):
+    subprocess.run([
+        "streamlit", "run", "src/multirec/web/app.py",
+        csv_path, mapping])
 
 
 if __name__ == '__main__':

@@ -51,5 +51,18 @@ def run(path, out, col):
 
 
 @manage.command()
-def web():
-    run_web()
+@click.argument(
+    'csv_path',
+    type=click.Path(exists=True, dir_okay=False)
+)
+@click.option(
+    '--mapping',
+    type=click.STRING,
+    multiple=True
+)
+def web(csv_path, mapping):
+    if mapping:
+        mapping = ",".join(mapping)
+        run_web(csv_path, mapping)
+    else:
+        run_web(csv_path)
