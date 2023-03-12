@@ -4,6 +4,7 @@
 # Custom
 *.csv
 .vscode
+.web
 wandb
 
 # ignore all local configuration
