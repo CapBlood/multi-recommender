@@ -1,7 +1,7 @@
 import streamlit as st
 
 from multirec.web.exceptions import TooMuchResults, ItemNotFound
-from multirec.web.utils import get_item_content, get_recs
+from multirec.web.utils import search_title, get_recs, get_item_by_id
 
 
 def main_page(input_csv, mapping=None):
@@ -15,28 +15,32 @@ def main_page(input_csv, mapping=None):
         label='Поиск')
         
     query_params = st.experimental_get_query_params()
-    if query_params:
-        show_content(query_params['item_title'][0], df_with_recs)
-    elif submit_button:
+    if submit_button:
         st.experimental_set_query_params(
             item_title=title
         )
         st.experimental_rerun()
+    elif 'item_title' in query_params:
+        search(query_params['item_title'][0], df_with_recs)
+    elif 'item_id' in query_params:
+        item_id = int(query_params['item_id'][0])
+        show_item(item_id, df_with_recs)
         
 
-def show_content(title, df_with_recs):
-    try:
-        item = get_item_content(
-            title,
-            df_with_recs
-        )
-    except TooMuchResults as e:
-        st.text(str(e))
-        return
-    except ItemNotFound as e:
-        st.text(str(e))
-        return
-    
+def search(title, df_with_recs):
+    items = search_title(
+        title,
+        df_with_recs
+    )
+    items = list(map(
+        lambda x: '<a href="/?item_id={}">{}</a>'.format(x[0], x[1]), 
+        items)
+    )
+    st.markdown("<br>".join(items), unsafe_allow_html=True)
+
+
+def show_item(item_id, df_with_recs):
+    item = get_item_by_id(item_id, df_with_recs)
 
     st.markdown("# {}".format(item['title']))
     st.markdown('Тэги: {}'.format(item['tags']))
@@ -50,7 +54,7 @@ def show_content(title, df_with_recs):
     st.markdown('## Рекомендации')
 
     item['recs'] = list(map(
-        lambda x: '<a href="/?item_title={}">{}</a>'.format(x, x), 
+        lambda x: '<a href="/?item_id={}">{}</a>'.format(x[0], x[1]), 
         item['recs'])
     )
     st.markdown("<br>".join(item['recs']), unsafe_allow_html=True)

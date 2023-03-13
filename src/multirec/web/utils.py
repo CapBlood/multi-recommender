@@ -35,26 +35,19 @@ def get_recs(input_csv, mapping=None):
 
 
 @st.cache_data
-def get_item_content(
+def search_title(
         title: str, df: pd.DataFrame) -> List[str]:
-
     title = title.lower()
-    matches = df[df['Name'].str.lower() == title]
-    if len(matches) == 0:
-        matches = df[df['Name'].str.lower().str.contains(title)]
+    matches = df[df['Name'].str.lower().str.contains(title)]
 
-    if len(matches) == 0:
-        raise ItemNotFound("'{}' doesn't exist".format(title))
+    return list(zip(matches.index, matches['Name']))
+    
+    
 
-    if len(matches) > 1:
-        raise TooMuchResults(
-            "Too much results ({}). You must choose the only one:\n{}".format(
-                len(matches), "\n".join(matches['Name'].to_list())
-            )
-        )
-    
-    item_series = matches.iloc[0]
-    
+@st.cache_data
+def get_item_by_id(item_id: int, df: pd.DataFrame) -> dict:
+    item_series = df.loc[item_id]
+
     recs = item_series["Recommendations"]
     item_series_by_recs = df.loc[recs]
 
@@ -63,5 +56,5 @@ def get_item_content(
         'desc': item_series['Description'],
         'url': item_series['Url'],
         'tags': item_series['Tags'],
-        'recs': item_series_by_recs['Name'].to_list()
+        'recs': list(zip(recs, item_series_by_recs['Name'].to_list()))
     }
