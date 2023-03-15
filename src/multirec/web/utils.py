@@ -8,17 +8,18 @@ from multirec.web.constants import CSV_FIELDS
 
 
 @st.cache_data
-def get_recs(input_csv, mapping=None):
+def get_recs(input_csv, mappings=None, index=None):
     df = pd.read_csv(
-        input_csv
+        input_csv,
+        index_col=index
     )
 
-    if mapping is not None:
-        for map_name in mapping.values():
+    if mappings is not None:
+        for map_name in mappings.values():
             if map_name in df.columns:
                 df = df.drop(columns=[map_name])
 
-        df = df.rename(columns=mapping)
+        df = df.rename(columns=mappings)
 
     for csv_field in CSV_FIELDS:
         if csv_field not in df.columns:
@@ -41,8 +42,7 @@ def search_title(
     matches = df[df['Name'].str.lower().str.contains(title)]
 
     return list(zip(matches.index, matches['Name']))
-    
-    
+
 
 @st.cache_data
 def get_item_by_id(item_id: int, df: pd.DataFrame) -> dict:
@@ -58,3 +58,24 @@ def get_item_by_id(item_id: int, df: pd.DataFrame) -> dict:
         'tags': item_series['Tags'],
         'recs': list(zip(recs, item_series_by_recs['Name'].to_list()))
     }
+
+
+def parse_line_dict(line):
+    """Преобразует строку вида 'key1:value1,key2:value2' в словарь
+    вида {'key1': 'value1', 'key2': 'value2'}
+
+    Args:
+        line (str): строка вида 'key1:value1,key2:value2'.
+
+    Returns:
+        dict: словарь вида {'key1': 'value1', 'key2': 'value2'}
+    """
+
+    dict_mapping = dict()
+
+    for m in line.split(','):
+        original_name, map_name = m.split(":")
+        dict_mapping[original_name] = map_name
+
+    return dict_mapping
+

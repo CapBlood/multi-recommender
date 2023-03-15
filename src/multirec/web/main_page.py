@@ -1,11 +1,18 @@
+import os
+
 import streamlit as st
 
-from multirec.web.exceptions import TooMuchResults, ItemNotFound
 from multirec.web.utils import search_title, get_recs, get_item_by_id
+from multirec.web.utils import parse_line_dict
 
 
-def main_page(input_csv, mapping=None):
-    df_with_recs = get_recs(input_csv, mapping=mapping)
+def main_page(input_csv):
+    mappings = os.environ.get('MAPPINGS', None)
+    if mappings:
+        mappings = parse_line_dict(mappings)
+    index = os.environ.get('INDEX', None)
+
+    df_with_recs = get_recs(input_csv, mappings=mappings, index=index)
 
     st.title('Multirec')
     

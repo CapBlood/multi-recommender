@@ -1,5 +1,8 @@
 """Command line tools for manipulating a Kedro project.
 Intended to be invoked via `kedro`."""
+import subprocess
+import os
+
 import click
 from kedro.framework.cli.utils import (
     CONTEXT_SETTINGS,
@@ -8,8 +11,6 @@ from kedro.io import DataCatalog, MemoryDataSet
 from kedro.extras.datasets.pandas import CSVDataSet
 from kedro.runner import SequentialRunner
 from kedro.framework.project import pipelines
-
-from multirec.web.__main__ import run_web
 
 
 @click.group(context_settings=CONTEXT_SETTINGS, name=__file__)
@@ -36,11 +37,25 @@ def manage():
     default='Tags',
     help='Наименование столбца для построения рекомендаций.'
 )
-def run(path, out, col):
+@click.option(
+    '--index',
+    type=click.STRING,
+    default=None,
+    help='Наименование столбца индексов.'
+)
+def run(path, out, col, index):
     io = DataCatalog(
         {
-            'dataframe': CSVDataSet(filepath=path),
-            'dataframe_with_recs': CSVDataSet(filepath=out),
+            'dataframe': CSVDataSet(
+                filepath=path, 
+                load_args={
+                    'index_col': index
+                }
+            ),
+            'dataframe_with_recs': CSVDataSet(
+                filepath=out,
+                save_args={'index': True}
+            ),
             'params:target_column': MemoryDataSet(col)
         }
     )
@@ -56,13 +71,24 @@ def run(path, out, col):
     type=click.Path(exists=True, dir_okay=False)
 )
 @click.option(
-    '--mapping',
-    type=click.STRING,
-    multiple=True
+    '--mappings',
+    type=click.STRING
 )
-def web(csv_path, mapping):
-    if mapping:
-        mapping = ",".join(mapping)
-        run_web(csv_path, mapping)
-    else:
-        run_web(csv_path)
+@click.option(
+    '--index',
+    type=click.STRING,
+    default=None,
+    help='Наименование столбца индексов.'
+)
+def web(csv_path, mappings, index):
+    env = dict()
+    if mappings:
+        env['MAPPINGS'] = mappings
+    if index:
+        env['INDEX'] = index
+
+    os.environ.update(env)
+    subprocess.run([
+        "streamlit", "run", "src/multirec/web/app.py",
+        csv_path
+    ])
