@@ -69,7 +69,7 @@ Multirec имеет простейший интерфейс упрощающий
 
 Пример запуска веб-интерфейса:
 ```bash
-kedro manage web --mapping Shikimori_url:Url --mapping recommendations:Recommendations --mapping Russian_name:Name --mapping Russian_description:Description data/03_primary/anime_with_recommendations.csv
+kedro manage web --index Rank --mappings Shikimori_url:Url,recommendations:Recommendations,Russian_name:Name,Russian_description:Description data/03_primary/anime_with_recommendations.csv
 ```
 
 ## Доступные модульные пайплайны
