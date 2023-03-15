@@ -14,7 +14,10 @@ def main_page(input_csv):
 
     df_with_recs = get_recs(input_csv, mappings=mappings, index=index)
 
-    st.title('Multirec')
+    st.markdown(
+        "<h1 style='text-align: center;'>{}</h1>".format('Multirec is all you need'),
+        unsafe_allow_html=True
+    )
     
     form = st.form(key='search_from')
     title = form.text_input(label='Введите название...')
