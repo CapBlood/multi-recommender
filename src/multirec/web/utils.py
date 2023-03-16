@@ -1,9 +1,10 @@
+import json
 from typing import List
 
 import streamlit as st
 import pandas as pd
 
-from multirec.web.exceptions import TooMuchResults, ItemNotFound, IncorrectCsvStructure
+from multirec.web.exceptions import IncorrectCsvStructure
 from multirec.web.constants import CSV_FIELDS
 
 
@@ -29,7 +30,7 @@ def get_recs(input_csv, mappings=None, index=None):
             )
         
     df['Recommendations'] = df['Recommendations'].apply(
-        lambda x: list(map(int, x.strip("[]").split(", ")))
+        parse_line_list
     )
 
     return df
@@ -60,7 +61,22 @@ def get_item_by_id(item_id: int, df: pd.DataFrame) -> dict:
     }
 
 
-def parse_line_dict(line):
+def parse_line_list(line: str, func=int) -> list:
+    """Преобразует строку вида "['string1', 'string2']" в список
+    вида ['string1', 'string2']
+
+    Args:
+        line (str): строка вида "['string1', 'string2']".
+        func: функция преобразования каждого элемента.
+
+    Returns:
+        dict: список вида ['string1', 'string2']
+    """
+
+    return json.loads(line)
+
+
+def parse_line_dict(line: str) -> dict:
     """Преобразует строку вида 'key1:value1,key2:value2' в словарь
     вида {'key1': 'value1', 'key2': 'value2'}
 
