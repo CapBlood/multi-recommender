@@ -16,11 +16,11 @@ multirec run <path_to_csv> <out_path_to_csv>
 ```
 
 <!-- ![alt text](images/kedro-default-pipeline.png "Пайплайн по умолчанию") -->
-<center>
+<!-- <center>
     <figure>
         <img alt="sdfsdf" src="/images/kedro-default-pipeline.png" width="50%">
         <figcaption>Рисунок 1. Пайплайн по умолчанию.</figcaption>
     </figure> 
-</center>
+</center> -->
 <!-- <center><img alt="sdfsdf" src="/images/kedro-default-pipeline.png" width="60%"></center> -->
 
