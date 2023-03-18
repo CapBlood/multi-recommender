@@ -1,0 +1,8 @@
+site_name: Multirec
+# site_url: https://example.com/
+nav:
+    - Getting Started: index.md
+    - Доступные общие пайплайны: pipelines.md
+    - Разработка: develop.md
+    - Доступные модульные пайплайны: modular_pipelines.md
+theme: readthedocs
