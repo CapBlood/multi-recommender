@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Разработка - Multirec</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "\u0420\u0430\u0437\u0440\u0430\u0431\u043e\u0442\u043a\u0430";
+        var mkdocs_page_input_path = "develop.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <script src="../js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Multirec
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Getting Started</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../pipelines/">Доступные общие пайплайны</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="./">Разработка</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#cli">Добавление новых команд CLI</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#_2">Добавление новых модульных пайплайнов</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#_3">Кастомные датасеты</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#_4">Тестирование</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#_5">Сборка пакета</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#_6">Микроупаковка модульных пайплайнов</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../modular_pipelines/">Доступные модульные пайплайны</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Multirec</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
+      <li>Разработка</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="_1">Разработка</h1>
+<p>На данной странице описаны частные случаи, описывающие шаблонные действия для расширения, модификации или тестирования функционала Multirec.</p>
+<h2 id="cli">Добавление новых команд CLI</h2>
+<p>Для добавления новых команд необходима модификация модуля <code>cli.py</code> в корне пакета <code>multirec</code>. Для добавления новой команды необходимо создать новую функцию и обернуть ее в декоратор <code>@manage.command</code>, добавляя далее необходимые вам декораторы в соответствии с библиотекой <a href="https://click.palletsprojects.com/en/8.1.x/">click</a>. Например:</p>
+<pre><code class="language-python">@manage.command()
+@click.argument(
+    'csv_path',
+    type=click.Path(exists=True, dir_okay=False)
+)
+@click.option(
+    '--mappings',
+    type=click.STRING
+)
+@click.option(
+    '--index',
+    type=click.STRING,
+    default=None,
+    help='Наименование столбца индексов.'
+)
+def web(csv_path, mappings, index):
+    env = dict()
+    if mappings:
+        env['MAPPINGS'] = mappings
+    if index:
+        env['INDEX'] = index
+
+    os.environ.update(env)
+    subprocess.run([
+        &quot;streamlit&quot;, &quot;run&quot;, &quot;src/multirec/web/app.py&quot;,
+        csv_path
+    ])
+</code></pre>
+<p>После реализации команда будет доступна через <a href="https://docs.kedro.org/en/stable/get_started/install.html">Kedro</a> и через утилиту multirec, устанавливаемую с пакетом:</p>
+<pre><code class="language-bash">kedro manage web --index Rank --mappings Shikimori_url:Url,recommendations:Recommendations,Russian_name:Name,Russian_description:Description data/03_primary/anime_with_recommendations.csv
+</code></pre>
+<h2 id="_2">Добавление новых модульных пайплайнов</h2>
+<p>Добавление новых модульных пайплайнов осуществляется с помощью утилиты <a href="https://docs.kedro.org/en/stable/get_started/install.html">Kedro</a>, например:</p>
+<pre><code class="language-bash">kedro pipeline create drop_nan_column
+</code></pre>
+<p>После выполнения вышеуказанной команды в подпакете <code>pipelines</code> пакета <code>multirec</code> создастся новый пайплайн (подпакет) с указанным именем и с шаблонными файлами:</p>
+<ul>
+<li><code>README.md</code>, содержащий описание пайплайна (его входные, выходные данные и описание работы);</li>
+<li><code>nodes.py</code>, предназначенный для хранения функций, который ответственный за основной функционал;</li>
+<li><code>pipeline.py</code>, предназначенный для оборачивания функций из <code>nodes.py</code> в <code>node</code> и затем в <code>pipeline</code>, функций <code>create_pipeline</code> должна возвращать готовый <code>pipeline</code>.</li>
+</ul>
+<p>Также одновременно создастся одноименный пакет в директории <code>tests</code>, предназначенный для хранения тестов соответствующего пайплайна.</p>
+<p>После реализации модульного пайплайна также необходимо создать в его пакете файл <code>requirements.txt</code> с требуемыми для него библиотеками Python, который также необходимо продублировать в корневой <code>requirements.txt</code> пакета <code>multirec</code>.</p>
+<p>Для включения модульного пайплайна в "общие" пайплайны, запускаемые через утилиту Kedro или <code>multirec</code>, необходимо зарегистрировать в файле <code>pipeline_registry.py</code> в корне пакета <code>multirec</code> новый пайплайн или добавить в уже существующий (<a href="https://docs.kedro.org/en/stable/nodes_and_pipelines/pipeline_registry.html">подробнее</a> об этом). </p>
+<h2 id="_3">Кастомные датасеты</h2>
+<p>В данном проекте используется кастомный датасет <code>MongoDBDataset</code>:
+- при загрузке происходит экспорт указанной коллекции в <code>JSON</code>, затем его конвертация в <code>pandas.Dataframe</code>, который передается далее пайплайну;
+- при сохранении происходит конвертация полученного на вход <code>pandas.Dataframe</code> в <code>JSON</code> и его вставка с перезаписью в указанную коллекцию <code>MondoDB</code>.</p>
+<p>Пример конфигурации <code>MongoDBDataset</code>:</p>
+<pre><code class="language-yml">dataframe_with_recs:
+  type: multirec.extras.datasets.mongo_dataset.MongoDBDataset
+  filepath: mongodb://localhost:27017
+  database: test
+  collection: anime
+  # filter_columns - опционален
+  filter_columns:
+    - Name
+    - Episodes
+    - Studio
+    - Rating
+    - Description
+    - Tags
+    - Related_Mange
+    - recommendations
+</code></pre>
+<h2 id="_4">Тестирование</h2>
+<p>Запуск тестов осуществляется с помощью утилиты <a href="https://tox.wiki/en/latest/">Tox</a>. Для запуска необходимо в корне проекта запустить следующую команду, которая запустит все найденные ею тесты в пакете <code>tests</code>:</p>
+<pre><code class="language-bash">tox
+</code></pre>
+<h2 id="_5">Сборка пакета</h2>
+<p>Для сборки пакета необходимо в корне репозитория выполнить команду <code>python -m build . --wheel</code>, после чего в директории <code>dist</code> появится пакет <code>.whl</code>, который затем можно установить.</p>
+<h2 id="_6">Микроупаковка модульных пайплайнов</h2>
+<p>Для микроупаковки модульного пайплайна Kedro необходимо ввести следующую команду в корне репозитория:</p>
+<pre><code class="language-bash">kedro micropkg package pipelines.&lt;pipeline_name&gt;
+</code></pre>
+<p>Для вставки микропакета модульного пайплайна в другой проект Kedro:</p>
+<pre><code class="language-bash">kedro micropkg pull -d pipelines /path/to/tag.gz
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../pipelines/" class="btn btn-neutral float-left" title="Доступные общие пайплайны"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../modular_pipelines/" class="btn btn-neutral float-right" title="Доступные модульные пайплайны">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../pipelines/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../modular_pipelines/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
