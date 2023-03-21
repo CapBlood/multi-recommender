@@ -21,11 +21,13 @@ name = "multirec"
 authors = [
   { name="CapBlood" },
 ]
+readme = "README.md"
 version = "0.1"
 dynamic = ["dependencies"]
 
 [project.urls]
 "Homepage" = "https://github.com/CapBlood/multi-recommender.git"
+documentation = "https://capblood.github.io/multi-recommender/"
 
 [project.scripts]
 multirec = "multirec.__main__:main"
