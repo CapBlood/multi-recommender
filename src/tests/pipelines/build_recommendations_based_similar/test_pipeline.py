@@ -27,7 +27,7 @@ def test_pipeline():
     )
     input_target_column = "Tags"
 
-    output_recs = get_recommendations(input_target_column, input_indexed_df, top=3)
+    output_recs = get_recommendations(input_target_column, input_indexed_df, top=2)
 
     assert output_recs["recommendations"].iloc[0] == [2, 1]
     assert output_recs["recommendations"].iloc[1] == [2, 0]
