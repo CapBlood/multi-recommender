@@ -61,6 +61,8 @@
     </li>
         </ul>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#_3">Наборы данных</a>
+    </li>
     </ul>
                 </li>
               </ul>
@@ -133,9 +135,16 @@
 'Url',
 'Recommendations'
 </code></pre>
-<p>Пример запуска веб-интерфейса:</p>
+<p>Пример запуска веб-интерфейса (через Kedro):</p>
 <pre><code class="language-bash">kedro manage web --index Rank --mappings Shikimori_url:Url,recommendations:Recommendations,Russian_name:Name,Russian_description:Description data/03_primary/anime_with_recommendations.csv
 </code></pre>
+<p>Пример запуска веб-интерфейса (через <code>multirec</code>):</p>
+<pre><code class="language-bash">multirec web --index Rank --mappings Shikimori_url:Url,recommendations:Recommendations,Russian_name:Name,Russian_description:Description data/03_primary/anime_with_recommendations.csv
+</code></pre>
+<h2 id="_3">Наборы данных</h2>
+<p>Для получения рекомендаций и использования веб-интерфейса можно использовать следующие наборы данных:
+- <a href="https://drive.google.com/file/d/11AMxQb2ADXRYVAXfqBA7X91CPnTnk69e/view?usp=sharing">аниме</a>;
+- <a href="https://drive.google.com/file/d/1MfU1R9Yaa5x6q2DJR0nz_pSBzKzwmFpy/view?usp=sharing">манга</a>.</p>
               
             </div>
           </div><footer>
@@ -183,5 +192,5 @@
 
 <!--
 MkDocs version : 1.4.2
-Build Date UTC : 2023-03-18 19:51:45.264622+00:00
+Build Date UTC : 2023-03-21 19:24:34.956335+00:00
 -->
