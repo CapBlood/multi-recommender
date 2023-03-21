@@ -50,7 +50,12 @@ Multirec имеет простейший интерфейс упрощающий
 'Recommendations'
 ```
 
-Пример запуска веб-интерфейса:
+Пример запуска веб-интерфейса (через Kedro):
 ```bash
 kedro manage web --index Rank --mappings Shikimori_url:Url,recommendations:Recommendations,Russian_name:Name,Russian_description:Description data/03_primary/anime_with_recommendations.csv
+```
+
+Пример запуска веб-интерфейса (через `multirec`):
+```bash
+multirec web --index Rank --mappings Shikimori_url:Url,recommendations:Recommendations,Russian_name:Name,Russian_description:Description data/03_primary/anime_with_recommendations.csv
 ```
