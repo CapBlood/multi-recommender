@@ -38,12 +38,18 @@ def manage():
     help='Наименование столбца для построения рекомендаций.'
 )
 @click.option(
+    '--size',
+    type=click.INT,
+    default=10,
+    help='Количество получаемых рекомендаций для каждой строки.'
+)
+@click.option(
     '--index',
     type=click.STRING,
     default=None,
     help='Наименование столбца индексов.'
 )
-def run(path, out, col, index):
+def run(path, out, col, size, index):
     io = DataCatalog(
         {
             'dataframe': CSVDataSet(
@@ -56,6 +62,7 @@ def run(path, out, col, index):
                 filepath=out,
                 save_args={'index': True}
             ),
+            'params:size': MemoryDataSet(size),
             'params:target_column': MemoryDataSet(col)
         }
     )

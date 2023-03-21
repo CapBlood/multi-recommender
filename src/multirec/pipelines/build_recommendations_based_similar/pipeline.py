@@ -16,7 +16,7 @@ def create_pipeline(**kwargs) -> Pipeline:
         [
             node(
                 func=get_recommendations,
-                inputs=["params:target_column", "dataframe"],
+                inputs=["params:target_column", "dataframe", "params:size"],
                 outputs="dataframe_with_recs",
             )
         ]
