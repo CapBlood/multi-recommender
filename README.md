@@ -10,6 +10,7 @@
     - [Через PyPI](#через-pypi-1)
     - [Через Kedro](#через-kedro-1)
     - [Веб-интерфейс](#веб-интерфейс)
+  - [Наборы данных](#наборы-данных)
 
 
 ## Описание
@@ -74,3 +75,8 @@ Multirec имеет простейший интерфейс упрощающий
 kedro manage web --index Rank --mappings Shikimori_url:Url,recommendations:Recommendations,Russian_name:Name,Russian_description:Description data/03_primary/anime_with_recommendations.csv
 ```
 
+## Наборы данных
+
+Для получения рекомендаций и использования веб-интерфейса можно использовать следующие наборы данных:
+- [аниме](https://drive.google.com/file/d/11AMxQb2ADXRYVAXfqBA7X91CPnTnk69e/view?usp=sharing);
+- [манга](https://drive.google.com/file/d/1MfU1R9Yaa5x6q2DJR0nz_pSBzKzwmFpy/view?usp=sharing).
