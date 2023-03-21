@@ -12,7 +12,7 @@ from kedro.pipeline import node
 
 
 def get_recommendations(
-    column: str, indexed_df: pd.DataFrame, top: int = 11
+    column: str, indexed_df: pd.DataFrame, top: int = 10
 ) -> pd.DataFrame:
     def build_recommendations(
         rs_df: pd.DataFrame,
@@ -56,7 +56,8 @@ def get_recommendations(
         final_df = rs_df.join(recommendations)
         return final_df
 
-    final_df = build_recommendations(indexed_df, column=column, top=top)
+    # top + 1 - один из них - указатель на ту же самую строку
+    final_df = build_recommendations(indexed_df, column=column, top=top+1)
     return final_df
 
 
